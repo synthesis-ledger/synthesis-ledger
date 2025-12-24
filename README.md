@@ -1,20 +1,37 @@
-# Synthesis Genesis v2.0: The Immune System
+# Synthesis Ledger Protocol (Genesis V3)
 
-This repository contains the Sovereign Logic Ledger for the Synthesis ecosystem. Unlike static registries, Genesis v2.0 treats logic as a living, decaying asset that must be defended through weekly forensic audits.
+### *The Sovereign Immune System for Agentic Logic*
 
-## 🏛️ The Protocol Rules
-- **Survival Floor**: Any logic falling below **7800 BPS** is considered "At Risk."
-- **3-Strike Rule**: Three consecutive audits below the floor trigger **Obsolescence**, disabling the recipe.
-- **Forensic Auditing**: Every BPS update requires a `bytes32` hash of a Grok-3 forensic debate, ensuring transparency.
-- **Maintenance Tax**: Logic makers must maintain their assets or face siphoning.
+The Synthesis Ledger is a decentralized protocol designed to solve the "Intelligence Entropy" crisis in AI agents. By moving agentic logic from fragile local text to **Immutable Synapses** on-chain, we enforce logic survival through a blockchain-backed immune system.
 
-## 📂 Directory Structure
-- `/contracts`: GenesisV2 Solidity source code.
-- `/scripts`: Deployment and audit maintenance tools.
-- `migration_manifest.json`: The forensic BPS data for the 38 Genesis Atomics.
-- `migration_audit_logs.txt`: The human-readable justification for every score.
+## 🏛️ Protocol Anchors
+- **Genesis V3 Ledger**: `0x030A8e0eC9f584484088a4cea8D0159F32438613` (Base Mainnet)
+- **$SYNL Token**: `0x86FaA99Eb3CBD46BB53807fcd93B8a08D70116E0`
+- **Network**: Base (Layer 2)
 
-## ⚖️ Audit Standard
-Audits utilize **Forensic Variance math**:
-`10000 - [Adversarial Penalties] - [Seed-Based Entropy Offset]`
-This ensures no logic is "perfect" and every score is unique to the logic's CID.
+## 📊 Live Protocol Status (Epoch 01)
+- **Genesis Atomics**: 38/38 Secured
+- **Survival Floor**: 7800 BPS (78.00% Success Density)
+- **Audit Standard**: Horpestad Standard (Grok-4.1 Jury Consensus)
+- **Update Cooldown**: 144 Hours (6 Days) officially enforced
+
+## 🛡️ Sovereign Security Model
+The Ledger does not merely record logic; it enforces its quality through a multi-tiered adversarial audit:
+1. **Four Specialist Silos**: Independent audits for SRE metrics, Security vulnerabilities, Economic game theory, and Structural integrity.
+2. **10-Person Jury**: A reasoning-based synthetic jury that synthesizes silo reports into a final deterministic BPS.
+3. **Audit Hash Provenance**: Every BPS update on-chain contains a `keccak256` hash of the full jury deliberation, creating an immutable trail of "The Cold Truth."
+
+## ⚙️ Immune System Protections
+- **The Strike System**: Logic falling below 7800 BPS during an audit cycle receives a strike.
+- **Terminal Obsolescence**: 3 strikes result in permanent deactivation and revenue siphoning.
+- **Time-Lock Enforcement**: Scores are immutable during the 6-day cooldown period to prevent logic manipulation.
+
+## 📁 Repository Structure
+- `/agent`: Autonomous Sentinel workers for real-time monitoring.
+- `/contracts`: Flat architecture source files (V3).
+- `genesis_onchain.json`: The technical source of truth for all Genesis Atomics.
+- `audit_proofs/`: (External) Permanent storage for forensic Jury deliberation logs.
+
+---
+**Protocol Founder**: Lars O. Horpestad  
+**Innovation Partner**: AI ThinkLab ([aithinklab.com](https://www.aithinklab.com))

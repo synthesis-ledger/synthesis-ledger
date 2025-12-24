@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const CONTRACT_ADDRESS = "0xdc34E683ECE76426cE578F2f7189B354acC1aAd4";
+const CONTRACT_ADDRESS = "0x030A8e0eC9f584484088a4cea8D0159F32438613";
 const RPC_URL = process.env.BASE_SEPOLIA_RPC_URL;
 
 const ABI = [

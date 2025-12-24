@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const CONTRACT_ADDRESS = "0xf63a4b7A464d2108c28F5D39D93011EdCDFaF2B2";
+const CONTRACT_ADDRESS = "0x030A8e0eC9f584484088a4cea8D0159F32438613";
 const RPC_URL = process.env.BASE_SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const XAI_API_KEY = process.env.XAI_API_KEY;
@@ -34,7 +34,7 @@ async function runCleanup() {
             console.log(`\nFixing Recipe ID ${i}: ${recipe.outcome}`);
             try {
                 const tx = await contract.setGolden(i, true, { nonce: nonce++ });
-                console.log(`✅ Sent: ${tx.hash}`);
+                console.log(`âœ… Sent: ${tx.hash}`);
                 await tx.wait();
             } catch (e) {
                 console.error(`Failed ID ${i}:`, e.message);
@@ -42,7 +42,7 @@ async function runCleanup() {
             }
         }
     }
-    console.log("\n✨ Cleanup Complete. Registry is 100% Golden.");
+    console.log("\nâœ¨ Cleanup Complete. Registry is 100% Golden.");
 }
 
 runCleanup().catch(console.error);

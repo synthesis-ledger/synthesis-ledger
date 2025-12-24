@@ -7,7 +7,7 @@ import fetch from 'node-fetch';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const CONTRACT_ADDRESS = "0xf63a4b7a464d2108c28f5d39d93011edcdfaf2b2";
+const CONTRACT_ADDRESS = "0x030A8e0eC9f584484088a4cea8D0159F32438613";
 const RPC_URL = process.env.BASE_SEPOLIA_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const XAI_API_KEY = process.env.XAI_API_KEY;
@@ -20,7 +20,7 @@ const ABI = [
 ];
 
 async function grokAudit(outcome) {
-    console.log(`🧠 Requesting Grok-3 Audit for: ${outcome}...`);
+    console.log(`ðŸ§  Requesting Grok-3 Audit for: ${outcome}...`);
     const prompt = `Act as SynthesisLedger Auditor. 
     Audit this AI-agent outcome: "${outcome}". 
     Evaluate its technical feasibility and security. 
@@ -78,9 +78,9 @@ async function startSentinelV2() {
             try {
                 console.log("Automating On-chain Certification...");
                 const tx = await contract.setGolden(id, true);
-                console.log(`✅ Tx Submitted: ${tx.hash}`);
+                console.log(`âœ… Tx Submitted: ${tx.hash}`);
                 await tx.wait();
-                console.log(`🌟 SUCCESS: Recipe ${id} is now GOLDEN.`);
+                console.log(`ðŸŒŸ SUCCESS: Recipe ${id} is now GOLDEN.`);
             } catch (txError) {
                 console.error("Blockchain Write Failed:", txError.message);
             }
