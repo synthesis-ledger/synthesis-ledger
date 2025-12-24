@@ -1,0 +1,13 @@
+{
+  "name": "synthesis-ledger-agent",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "start": "node agent.js"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3",
+    "ethers": "^6.16.0",
+    "node-fetch": "^2.7.0"
+  }
+}
