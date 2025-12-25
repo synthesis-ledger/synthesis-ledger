@@ -1,91 +1,20 @@
-🚀 Active Protocol Pulse: 2025-12-25 14:37 | 12k+ Requests Served
+# Synthesis Genesis v2.0: The Immune System
 
-# ?? 12,414 Edge Requests | 572 Repository Clones | Horpestad V3 Standard
-### [Live Portal](https://www.synthesisledger.xyz) | [Genesis Codex](https://github.com/synthesis-ledger/synthesis-ledger/tree/main/app/docs)
+This repository contains the Sovereign Logic Ledger for the Synthesis ecosystem. Unlike static registries, Genesis v2.0 treats logic as a living, decaying asset that must be defended through weekly forensic audits.
 
+## 🏛️ The Protocol Rules
+- **Survival Floor**: Any logic falling below **7800 BPS** is considered "At Risk."
+- **3-Strike Rule**: Three consecutive audits below the floor trigger **Obsolescence**, disabling the recipe.
+- **Forensic Auditing**: Every BPS update requires a `bytes32` hash of a Grok-3 forensic debate, ensuring transparency.
+- **Maintenance Tax**: Logic makers must maintain their assets or face siphoning.
 
-### *The Sovereign Immune System for Agentic Logic*
+## 📂 Directory Structure
+- `/contracts`: GenesisV2 Solidity source code.
+- `/scripts`: Deployment and audit maintenance tools.
+- `migration_manifest.json`: The forensic BPS data for the 38 Genesis Atomics.
+- `migration_audit_logs.txt`: The human-readable justification for every score.
 
-The Synthesis Ledger is a decentralized protocol designed to solve the "Intelligence Entropy" crisis in AI agents. By moving agentic logic from fragile local text to **Immutable Synapses** on-chain, we enforce logic survival through a blockchain-backed immune system.
-
-## Ã°Å¸Ââ€ºÃ¯Â¸Â Protocol Anchors
-- **Genesis V3 Ledger**: [`0x030A8e0eC9f584484088a4cea8D0159F32438613`](https://basescan.org/address/0x030A8e0eC9f584484088a4cea8D0159F32438613) (Base Mainnet)
-- **$SYNL Token**: `0x86FaA99Eb3CBD46BB53807fcd93B8a08D70116E0`
-- **Network**: Base (Layer 2 Ethereum)
-
-## Ã°Å¸â€œÅ  Live Protocol Status (Epoch 01)
-- **Genesis Atomics**: 38/38 Secured
-- **Survival Floor**: 7800 BPS (78.00% Success Density)
-- **Audit Standard**: Horpestad Standard (Grok-4.1 Jury Consensus)
-- **Update Cooldown**: 144 Hours (6 Days) officially enforced
-
-## Ã°Å¸Å¡â€š The Genesis Train: 38 Verified Atomics
-The following deterministic logic silos are anchored to the Base Mainnet and verified for zero-variance execution.
-
-### **Genesis Foundation & Innovation**
-* **01: //SYNTH_MANIFESTO_V3** Ã¢â‚¬â€ Foundational protocol logic.
-* **02: //SYNTH_ATOMIC_LS_MIGRATPROOF** Ã¢â‚¬â€ Legacy system migration verification.
-* **03: //SYNTH_ATOMIC_ETH_INTEGRITYBPS** Ã¢â‚¬â€ Ethereum-native data integrity scoring.
-* **04: //SYNTH_ATOMIC_GAM_WORLDSEED** Ã¢â‚¬â€ Procedural world-state logic.
-* **05: //SYNTH_ATOMIC_GAM_LORERECEIPT** Ã¢â‚¬â€ Narrative proof-of-custody.
-
-### **Strategic (C-Suite)**
-* **30: //SYNTH_ATOMIC_COO_WORKFLOWMAPPER** Ã¢â‚¬â€ Operational efficiency logic.
-* **31: //SYNTH_ATOMIC_CMO_PULSEHARVESTER** Ã¢â‚¬â€ Sentiment and pulse detection.
-* **32: //SYNTH_ATOMIC_CMO_BRANDTUNER** Ã¢â‚¬â€ Brand resonance alignment.
-* **33: //SYNTH_ATOMIC_CFO_SOLVENCYAUDIT** Ã¢â‚¬â€ Real-time solvency verification.
-* **34: //SYNTH_ATOMIC_CFO_LEDGERPARSER** Ã¢â‚¬â€ Institutional ledger parsing.
-* **35: //SYNTH_ATOMIC_CSO_PARITYAUDIT** Ã¢â‚¬â€ Competitive parity analysis.
-* **36: //SYNTH_ATOMIC_CSO_MOATCLASSIFIER** Ã¢â‚¬â€ Strategic moat verification.
-* **37: //SYNTH_ATOMIC_CEO_PIVOTORACLE** Ã¢â‚¬â€ Executive pivot decision support.
-* **38: //SYNTH_ATOMIC_CEO_BOARDSIM** Ã¢â‚¬â€ Board-level logic simulation.
-
-### **Growth & Intelligence**
-* **23: //SYNTH_ATOMIC_OSI_TRUTHBPS** Ã¢â‚¬â€ OSINT truth-verification scoring.
-* **24: //SYNTH_ATOMIC_OSI_NEXUSLINKER** Ã¢â‚¬â€ Cross-data-silo linking logic.
-* **25: //SYNTH_ATOMIC_OSI_ARTIFACTAUDIT** Ã¢â‚¬â€ Evidence artifact verification.
-* **26: //SYNTH_ATOMIC_GH_NOISEGUARD** Ã¢â‚¬â€ Data signal-to-noise filtering.
-* **27: //SYNTH_ATOMIC_GH_CONTRASTIDEA** Ã¢â‚¬â€ Growth hypothesis contrast logic.
-* **28: //SYNTH_ATOMIC_GH_BURSTDETECT** Ã¢â‚¬â€ Market burst and trend detection.
-* **29: //SYNTH_ATOMIC_GH_ALGOOPTIMIZER** Ã¢â‚¬â€ Algorithmic growth optimization.
-
-### **Specialized Professions**
-* **14: //SYNTH_ATOMIC_HR_OUTCOMEEXTRACT** Ã¢â‚¬â€ Performance outcome parsing.
-* **15: //SYNTH_ATOMIC_HR_NEURALFIT** Ã¢â‚¬â€ Candidate resonance verification.
-* **16: //SYNTH_ATOMIC_EC_RESTOCKSIM** Ã¢â‚¬â€ Supply chain restock logic.
-* **17: //SYNTH_ATOMIC_EC_DYNAMICPRICE** Ã¢â‚¬â€ Automated pricing logic gates.
-* **18: //SYNTH_ATOMIC_EC_SKUSIFTER** Ã¢â‚¬â€ Product catalog optimization.
-* **19: //SYNTH_ATOMIC_RE_VALUATIONBPS** Ã¢â‚¬â€ Real estate valuation integrity.
-* **20: //SYNTH_ATOMIC_RE_PERMITSIPHON** Ã¢â‚¬â€ Regulatory permit data ingestion.
-* **21: //SYNTH_ATOMIC_HC_PATHVALIDATOR** Ã¢â‚¬â€ Healthcare path-validation logic.
-* **22: //SYNTH_ATOMIC_LEG_PRECEDENTCHECK** Ã¢â‚¬â€ Legal precedent verification.
-
-### **Builders, Ethics & MLOps**
-* **06: //SYNTH_ATOMIC_CS_TRUTHDISTILL** Ã¢â‚¬â€ Content truth distillation.
-* **07: //SYNTH_ATOMIC_CS_RESONBPS** Ã¢â‚¬â€ Communication resonance scoring.
-* **08: //SYNTH_ATOMIC_CS_PROMPTSYNTH** Ã¢â‚¬â€ Deterministic prompt architecture.
-* **09: //SYNTH_ATOMIC_CS_OMNITUNER** Ã¢â‚¬â€ Multi-model alignment logic.
-* **10: //SYNTH_ATOMIC_PA_FORGEDID** Ã¢â‚¬â€ Identity forgery detection.
-* **11: //SYNTH_ATOMIC_PA_MODELALIGN** Ã¢â‚¬â€ Model parameter alignment.
-* **12: //SYNTH_ATOMIC_SEC_JAILSHIELD** Ã¢â‚¬â€ Security jailbreak protection.
-* **13: //SYNTH_ATOMIC_DFI_POOLSIFTER** Ã¢â‚¬â€ DeFi liquidity pool analysis.
-
-## Ã°Å¸â€ºÂ¡Ã¯Â¸Â Sovereign Security Model
-The Ledger does not merely record logic; it enforces its quality through a multi-tiered adversarial audit:
-1. **Four Specialist Silos**: Independent audits for SRE metrics, Security vulnerabilities, Economic game theory, and Structural integrity.
-2. **10-Person Jury**: A reasoning-based synthetic jury that synthesizes silo reports into a final deterministic BPS.
-3. **Audit Hash Provenance**: Every BPS update on-chain contains a `keccak256` hash of the full jury deliberation, creating an immutable trail of "The Cold Truth."
-
-## Ã¢Å¡â„¢Ã¯Â¸Â Immune System Protections
-- **The Strike System**: Logic falling below 7800 BPS during an audit cycle receives a strike.
-- **Terminal Obsolescence**: 3 strikes result in permanent deactivation and revenue siphoning.
-- **Time-Lock Enforcement**: Scores are immutable during the 6-day cooldown period to prevent logic manipulation.
-
-## Ã°Å¸â€œÂ Repository Structure
-- `/agent`: Autonomous Sentinel workers for real-time monitoring.
-- `/contracts`: Flat architecture source files (V3).
-- `genesis_onchain.json`: The technical source of truth for all Genesis Atomics.
-
----
-**Protocol Founder**: Lars O. Horpestad  
-**Innovation Partner**: AI Think Lab ([aithinklab.com](https://www.aithinklab.com))
+## ⚖️ Audit Standard
+Audits utilize **Forensic Variance math**:
+`10000 - [Adversarial Penalties] - [Seed-Based Entropy Offset]`
+This ensures no logic is "perfect" and every score is unique to the logic's CID.
