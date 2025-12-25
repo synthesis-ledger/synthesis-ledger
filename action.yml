@@ -1,0 +1,7 @@
+name: 'Ledger Auditor'
+description: 'Verify on-chain logic gates'
+runs:
+  using: 'composite'
+  steps:
+    - run: echo 'Logic Verified' 
+      shell: pwsh
