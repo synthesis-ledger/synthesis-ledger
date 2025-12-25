@@ -1,4 +1,4 @@
-?? Active Protocol Pulse: 2025-12-25 14:27 | 12k+ Requests Served
+﻿?? Active Protocol Pulse: 2025-12-25 14:27 | 12k+ Requests Served
 
 # ?? 12,414 Edge Requests | 572 Repository Clones | Horpestad V3 Standard
 ### [Live Portal](https://www.synthesisledger.xyz) | [Genesis Codex](https://github.com/synthesis-ledger/synthesis-ledger/tree/main/app/docs)
