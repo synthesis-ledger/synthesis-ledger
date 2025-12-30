@@ -5,8 +5,8 @@
   "description": "Sovereign Logic Ledger - Genesis v2",
   "main": "mainnet_batch_audit.js",
   "dependencies": {
-    "dotenv": "^16.4.5",
-    "ethers": "^6.13.0",
+    "dotenv": "^16.6.1",
+    "ethers": "^6.16.0",
     "node-fetch": "^3.3.2"
   },
   "devDependencies": {
