@@ -9,3 +9,7 @@ memory.json
 .env
 .env.local
 .env.hardened
+
+
+# Soldeer
+/dependencies
