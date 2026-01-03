@@ -2,39 +2,39 @@
  .SYNOPSIS
   V42_Arweave_Seeding_Logic.ps1
   Author: Lars O. Horpestad
-  Description: Seeds the 38 Genesis Atomics to Arweave and anchors their CIDs on the Base Ledger.
-  This script "Burns the Boats"—once executed, the registry is no longer a local file but a global standard.
+  Description: Hard-Privacy SDK Core. Dynamically seeds Atomic Logic to Arweave 
+               with technical schemas and anchors CIDs on the Base Ledger.
 #>
+
+Param(
+    [Parameter(Mandatory=$true)]
+    [PSCustomObject[]]$AtomicsToSeed # Pass objects containing ID, Name, BPS, InputSchema, OutputSchema
+)
 
 # --- CONFIGURATION ---
 $ArweaveKeyPath = "C:\synthesis-ledger\secrets\arweave-keyfile.json"
 $LedgerContract = "0x030A8e0eC9f584484088a4cea8D0159F32438613"
 $BaseRPC = "https://mainnet.base.org"
 
-# --- GENESIS 38 ATOMIC DEFINITIONS ---
-# This is the "Hardened" blueprint of the Intelligence. 
-$GenesisAtomics = @(
-    @{ ID="A-CFO-LedgerParser"; Name="CFO Ledger Auditor"; Desc="High-fidelity audit of digital ledgers"; BPS=9689 },
-    @{ ID="A-CSO-MoatClassifier"; Name="CSO Strategy Mapper"; Desc="Competitive advantage synthesis"; BPS=9605 },
-    @{ ID="A-CEO-ExecutiveSummary"; Name="CEO Logic Finalizer"; Desc="Strategic decision synthesis"; BPS=9712 }
-    # ... (35 more Atomics follow here)
-)
+Write-Host "[INIT] Initializing V42 Dynamic Seeding Engine..." -ForegroundColor Cyan
 
-Write-Host "--- INITIALIZING V42 GENESIS SEEDING ---" -ForegroundColor Cyan
-
-foreach ($Atomic in $GenesisAtomics) {
-    Write-Host "Processing $($Atomic.ID)..." -ForegroundColor Yellow
+foreach ($Atomic in $AtomicsToSeed) {
+    Write-Host "[SEED] Processing Atomic ID: $($Atomic.ID)..." -ForegroundColor Yellow
     
-    # 1. GENERATE IMMUTABLE CONTENT
+    # 1. GENERATE ZERO-FLUFF IMMUTABLE CONTENT
     $AtomicContent = @{
         version = "42.0.0"
-        metadata = $Atomic
-        logic_standard = "Horpestad_V42"
+        logic_id = $Atomic.ID
+        logic_name = $Atomic.Name
+        standard = "Horpestad_V42"
+        schemas = @{
+            input = $Atomic.InputSchema
+            output = $Atomic.OutputSchema
+        }
         timestamp = (Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ssZ")
-    } | ConvertTo-Json -Depth 10
+    } | ConvertTo-Json -Depth 10 -Compress
 
-    # 2. SEED TO ARWEAVE (Using 'arkb' or 'arweave-js' via node)
-    # We tag the transaction with 'Sovereign-Version: 42' for global discovery
+    # 2. PERMAWEB UPLOAD (Hardened Verification)
     $ArweaveCID = node -e "
         const Arweave = require('arweave');
         const fs = require('fs');
@@ -42,29 +42,41 @@ foreach ($Atomic in $GenesisAtomics) {
         const jwk = JSON.parse(fs.readFileSync('$ArweaveKeyPath'));
         
         async function upload() {
-            let tx = await arweave.createTransaction({ data: '$AtomicContent' }, jwk);
-            tx.addTag('Content-Type', 'application/json');
-            tx.addTag('App-Name', 'Synthesis-Ledger');
-            tx.addTag('Sovereign-Version', '42');
-            tx.addTag('Atomic-ID', '$($Atomic.ID)');
-            
-            await arweave.transactions.sign(tx, jwk);
-            await arweave.transactions.post(tx);
-            console.log(tx.id);
+            try {
+                let tx = await arweave.createTransaction({ data: '$AtomicContent' }, jwk);
+                tx.addTag('Content-Type', 'application/json');
+                tx.addTag('App-Name', 'Synthesis-Ledger');
+                tx.addTag('Sovereign-Version', '42');
+                tx.addTag('Atomic-ID', '$($Atomic.ID)');
+                tx.addTag('Schema-Version', 'v1');
+                
+                await arweave.transactions.sign(tx, jwk);
+                const response = await arweave.transactions.post(tx);
+                
+                if (response.status === 200 || response.status === 208) {
+                    console.log(tx.id);
+                } else {
+                    process.exit(1);
+                }
+            } catch (e) {
+                process.exit(1);
+            }
         }
         upload();
     "
 
-    if ($ArweaveCID) {
-        Write-Host "Successfully Pinned to Arweave! CID: $ArweaveCID" -ForegroundColor Green
+    # 3. ANCHOR TO BASE MAINNET (Verification Gate)
+    if ($ArweaveCID -and $ArweaveCID.Length -eq 43) {
+        Write-Host "[SUCCESS] Pinned to Arweave! CID: $ArweaveCID" -ForegroundColor Green
+        Write-Host "[ANCHOR] Committing Pointer to Base Ledger..." -ForegroundColor Gray
         
-        # 3. ANCHOR CID TO BASE MAINNET
-        # This calls the 'addAtomic' function on your Sovereign_Clockwork_Ledger_V42
-        # cast send $LedgerContract "addAtomic(string,string,uint256)" "$($Atomic.ID)" "$ArweaveCID" "$($Atomic.BPS)" --rpc-url $BaseRPC
-        Write-Host "Anchoring CID $ArweaveCID to Ledger at $LedgerContract" -ForegroundColor Gray
+        # Foundry/Cast Anchor Command using registerAtomic
+        cast send $LedgerContract "registerAtomic(uint256,string,string,address)" `
+            $Atomic.BPS "$($Atomic.ID)" "$ArweaveCID" "$env:PRIVATE_KEY_ADDRESS" `
+            --rpc-url $BaseRPC --private-key $env:PRIVATE_KEY
     } else {
-        Write-Warning "Failed to seed $($Atomic.ID). Retrying..."
+        Write-Error "[FAILURE] Arweave verification failed for $($Atomic.ID). Logic not anchored."
     }
 }
 
-Write-Host "--- GENESIS 38 SEEDED. REGISTRY IS NOW PERMANENT. ---" -ForegroundColor Cyan
+Write-Host "[COMPLETE] Batch Processing Finished." -ForegroundColor Cyan

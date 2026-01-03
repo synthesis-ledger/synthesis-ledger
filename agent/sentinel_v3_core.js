@@ -3,24 +3,42 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fetch from 'node-fetch';
+import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-const CONTRACT_ADDRESS = "0x030A8e0eC9f584484088a4cea8D0159F32438613"; // V42 Ledger [cite: 3, 5]
-const RPC_URL = process.env.NEXT_PUBLIC_BASE_RPC_URL; // 
+// --- HARDENED CONFIGURATION ---
+const CONTRACT_ADDRESS = "0x030A8e0eC9f584484088a4cea8D0159F32438613";
+const RPC_URL = process.env.NEXT_PUBLIC_BASE_RPC_URL;
 const PRIVATE_KEY = process.env.PRIVATE_KEY;
 const XAI_API_KEY = process.env.XAI_API_KEY;
 
-// V42 Hardened ABI [cite: 3, 5]
+// Load models from .env with fallback defaults
+const AUDIT_MODEL = process.env.SENTINEL_AUDIT_MODEL || 'grok-4.1-fast-non-reasoning';
+const JURY_MODEL = process.env.SENTINEL_JURY_MODEL || 'grok-4.1-fast-reasoning';
+
+const LOG_FILE = path.join(__dirname, 'forensic_failures.log');
+
 const ABI = [
     "event CertificationIssued(string atomicId, bytes32 dataHash, uint256 feePaid)",
     "function issueStrike(string atomicId, uint256 newBps) external",
     "function registry(string atomicId) view returns (string cid, address creator, uint256 bps, uint256 strikes, bool isObsolete)"
 ];
 
+/**
+ * Logs failures to a local file for forensic review.
+ */
+function logForensicFailure(atomicId, error) {
+    const timestamp = new Date().toISOString();
+    const entry = `[${timestamp}] ATOMIC: ${atomicId} | ERROR: ${error}\n`;
+    fs.appendFileSync(LOG_FILE, entry);
+}
+
 async function run10TrialSimulation(atomicId, logicDetails) {
     console.log(`\n--- [V42] Initiating 10-Trial Simulation for: ${atomicId} ---`);
+    console.log(`>>> Using Audit Model: ${AUDIT_MODEL}`);
+    
     let successfulTrials = 0;
 
     for (let i = 1; i <= 10; i++) {
@@ -30,7 +48,7 @@ async function run10TrialSimulation(atomicId, logicDetails) {
                 method: 'POST',
                 headers: { 'Authorization': `Bearer ${XAI_API_KEY}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    model: 'grok-4.1-fast-non-reasoning', // Hardened Model Variant [cite: 4]
+                    model: AUDIT_MODEL,
                     messages: [
                         { role: 'system', content: 'You are the Horpestad Standard Auditor. Output raw JSON only.' }, 
                         { role: 'user', content: `Audit feasibility for logic: ${logicDetails}` }
@@ -38,6 +56,9 @@ async function run10TrialSimulation(atomicId, logicDetails) {
                     temperature: 0.2
                 })
             });
+            
+            if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
+            
             const data = await response.json();
             if (data.choices && data.choices.length > 0) {
                 successfulTrials++;
@@ -47,35 +68,38 @@ async function run10TrialSimulation(atomicId, logicDetails) {
             }
         } catch (e) {
             console.log('❌');
+            logForensicFailure(atomicId, `Trial ${i} failed: ${e.message}`);
         }
     }
 
-    const finalBps = (successfulTrials / 10) * 10000;
-    return finalBps;
+    return (successfulTrials / 10) * 10000;
 }
 
 async function startSentinel() {
     console.log('🏛️ Synthesis Sentinel V42: ONLINE (Hardened Standard)');
     
+    if (!RPC_URL || !PRIVATE_KEY) {
+        console.error("❌ CRITICAL ERROR: RPC_URL or PRIVATE_KEY missing in .env");
+        process.exit(1);
+    }
+
     const provider = new ethers.JsonRpcProvider(RPC_URL);
     const wallet = new ethers.Wallet(PRIVATE_KEY, provider);
     const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, wallet);
 
-    // V42 Event Listener: CertificationIssued [cite: 3]
     contract.on("CertificationIssued", async (atomicId, dataHash) => {
         console.log(`\n🔔 NEW CERTIFICATION DETECTED: [${atomicId}]`);
         
         try {
-            // 1. Fetch logic CID from Arweave via the Ledger [cite: 3, 5]
             const registryEntry = await contract.registry(atomicId);
-            const arweaveData = await fetch(`https://arweave.net/${registryEntry.cid}`).then(res => res.json());
             
-            // 2. Perform 10-trial forensic audit 
+            // Standardizing Arweave URL handling
+            const cid = registryEntry.cid.startsWith('ar://') ? registryEntry.cid.replace('ar://', '') : registryEntry.cid;
+            const arweaveData = await fetch(`https://arweave.net/${cid}`).then(res => res.json());
+            
             const newBps = await run10TrialSimulation(atomicId, JSON.stringify(arweaveData));
             console.log(`>>> Final Forensic BPS for ${atomicId}: ${newBps}`);
 
-            // 3. Automated Immune System Trigger [cite: 3]
-            // If BPS falls below 7800, a strike is issued automatically on-chain.
             console.log(`>>> Committing forensic audit to Base Mainnet...`);
             const tx = await contract.issueStrike(atomicId, Math.floor(newBps));
             await tx.wait();
@@ -84,6 +108,7 @@ async function startSentinel() {
 
         } catch (error) {
             console.error(`❌ SENTINEL ERROR for ${atomicId}:`, error.message);
+            logForensicFailure(atomicId, `Main Loop Error: ${error.message}`);
         }
     });
 }

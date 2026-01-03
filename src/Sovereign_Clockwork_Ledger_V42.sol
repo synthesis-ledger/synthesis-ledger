@@ -2,18 +2,16 @@
 pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 /**
  * @title Sovereign_Clockwork_Ledger_V42
  * @author Lars O. Horpestad | AI ThinkLab
- * @notice The "Granite Layer" of the Synthesis Ledger. 
- * @dev Enforces immutable $0.10 fees, bootstrap price discovery, and Arweave anchors.
+ * @notice The "Granite Layer" of the Synthesis Ledger.
+ * @dev Enforces immutable $0.10 fees, reentrancy protection, and administrative sunsets.
  */
 
 interface IPriceOracle {
-    /** * @notice Returns price of 1 SYNL in USD with 8 decimals.
-     * Example: $0.10 = 10,000,000
-     */
     function getSynlPriceInUsd() external view returns (uint256);
 }
 
@@ -22,7 +20,7 @@ interface ISYNLToken {
     function transferFrom(address from, address to, uint256 amount) external returns (bool);
 }
 
-contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
+contract Sovereign_Clockwork_Ledger_V42 is AccessControl, ReentrancyGuard {
     
     // --- ROLES & TIMERS ---
     bytes32 public constant GROWTH_CONTROLLER_ROLE = keccak256("GROWTH_CONTROLLER_ROLE");
@@ -31,28 +29,30 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
 
     // --- IMMUTABLE CONSTANTS ---
     address public immutable FOUNDER_VAULT;
-    uint256 public constant CERTIFICATION_FEE_USD = 10; // $0.10 (scaled by 100 for precision)
-    uint256 public constant BOOTSTRAP_FEE_SYNL = 1 * 10**18; // Default 1 SYNL if oracle is 0
+    uint256 public constant CERTIFICATION_FEE_USD = 10; // $0.10 (scaled by 100)
+    uint256 public constant BOOTSTRAP_FEE_SYNL = 1 * 10**18;
     uint256 public constant BPS_FLOOR = 7800;
+    uint256 public constant STRIKE_COOLDOWN = 24 hours;
 
     // --- STATE VARIABLES ---
     address public oracleAddress;
     address public synlTokenAddress;
+    bool public isGenesisClosed; // Permanent flag to end free anchoring
 
-    // Arweave Logic Pointers (Community Upgradeable via Council)
     string public sovereignEngineArweaveId; 
-    string public auditSweepArweaveId;      
+    string public auditSweepArweaveId;
 
     struct Atomic {
         string cid;
         address creator;
         uint256 bps;
         uint256 strikes;
+        uint256 lastStrikeTimestamp;
         bool isObsolete;
     }
 
     mapping(string => Atomic) public registry;
-    mapping(uint256 => string) public idToName; // 🔗 SDK BRIDGE: Maps numeric ID to Outcome Name
+    mapping(uint256 => string) public idToName;
     mapping(bytes32 => bool) public executedHashes;
     mapping(address => address) public referrers;
 
@@ -60,6 +60,8 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
     event CertificationIssued(string atomicId, bytes32 dataHash, uint256 feePaid);
     event LogicUpgraded(string target, string newArweaveId, address admin);
     event StrikeIssued(string atomicId, uint256 totalStrikes, uint256 newBps);
+    event RewardMintFailed(address indexed hunter, bytes32 indexed dataHash);
+    event GenesisWindowClosed(address admin);
 
     constructor(address _founderVault, address _oracle, address _token) {
         FOUNDER_VAULT = _founderVault;
@@ -78,20 +80,19 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
     }
 
     // --- SDK TRANSLATOR ---
+
     /**
-     * @notice Allows the SDK to record a pulse using a numeric ID.
-     * @dev Admin bypasses fee for Genesis anchoring to prevent cold-start deadlock.
+     * @notice Allows SDK to record a pulse.
+     * @dev Free bypass is only available if the genesis window is still open.
      */
     function recordPulse(uint256 id, uint256 bps, bytes32 certHash) external returns (bool) {
         string memory name = idToName[id];
         require(bytes(name).length > 0, "ID_NOT_REGISTERED");
         
-        if (hasRole(DEFAULT_ADMIN_ROLE, msg.sender)) {
-            // Genesis Bypass: Direct anchor for Admin
+        if (hasRole(DEFAULT_ADMIN_ROLE, msg.sender) && !isGenesisClosed) {
             executedHashes[certHash] = true;
             emit CertificationIssued(name, certHash, 0);
         } else {
-            // Standard Path: Full fee logic
             executeAndCertify(name, certHash, address(0));
         }
         
@@ -99,39 +100,37 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
         return true;
     }
 
-    // --- ARWEAVE ANCHORING & UPGRADES ---
-
     /**
-     * @notice Community Council Upgrades
-     * Allows the 90 Key Figures to update the AI logic pointers on Arweave.
+     * @notice Manually ends the free anchoring period for the Admin.
+     * @dev Once called, even the Admin must pay the $0.10 fee.
      */
-    function upgradeEternalLogic(string calldata _engineId, string calldata _sweepId) 
-        external 
-        onlyRole(GROWTH_CONTROLLER_ROLE) 
-    {
-        sovereignEngineArweaveId = _engineId;
-        auditSweepArweaveId = _sweepId;
-        emit LogicUpgraded("MASTER", _engineId, msg.sender);
+    function closeGenesisWindow() external onlyRole(DEFAULT_ADMIN_ROLE) {
+        isGenesisClosed = true;
+        emit GenesisWindowClosed(msg.sender);
     }
 
     // --- CORE EXECUTION ---
 
-    function executeAndCertify(string memory _atomicId, bytes32 _dataHash, address _referrer) public {
+    /**
+     * @notice Executes logic certification and distributes fees.
+     * @dev Protected against reentrancy and double-claiming.
+     */
+    function executeAndCertify(string memory _atomicId, bytes32 _dataHash, address _referrer) public nonReentrant {
         Atomic storage atomic = registry[_atomicId];
         require(!atomic.isObsolete, "Logic Obsolete: 3 Strikes reached");
+        
+        // Anti-Spam / Reentrancy protection: State update BEFORE interactions
         require(!executedHashes[_dataHash], "Double-Claim Prevention: Hash already used");
+        executedHashes[_dataHash] = true;
         
         uint256 synlRequired = calculateSynlFee();
         
-        // --- THE SPLIT (Codified V25 Protocol) ---
-        // 50% Founder [Permanent Royalty]
+        // Fee Distribution (50% Founder, 10% Creator, 40% CAP)
         _handleTransfer(msg.sender, FOUNDER_VAULT, (synlRequired * 50) / 100);
         
-        // 10% Creator (Diverted to CAP if logic fails/obsolete)
         address creatorRecipient = (atomic.strikes >= 3) ? address(this) : atomic.creator;
         _handleTransfer(msg.sender, creatorRecipient, (synlRequired * 10) / 100);
         
-        // 40% Community Audit Pool (CAP) & Referrals
         uint256 capAmount = (synlRequired * 40) / 100;
         address activeRef = referrers[msg.sender] != address(0) ? referrers[msg.sender] : _referrer;
         
@@ -141,31 +140,26 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
             capAmount -= (synlRequired * 10) / 100;
         }
 
-        // Remaining 30-40% stays in Ledger for AI Audit Costs
         _handleTransfer(msg.sender, address(this), capAmount);
         
-        executedHashes[_dataHash] = true;
-        
-        // Check if token supports minting rewards
-        try ISYNLToken(synlTokenAddress).mintHuntReward(msg.sender, _dataHash) {} catch {}
+        // Reward Minting (Fail-Safe)
+        try ISYNLToken(synlTokenAddress).mintHuntReward(msg.sender, _dataHash) {
+            // Success
+        } catch {
+            emit RewardMintFailed(msg.sender, _dataHash);
+        }
 
         emit CertificationIssued(_atomicId, _dataHash, synlRequired);
     }
 
     // --- HELPERS ---
 
-    /**
-     * @notice "Horpestad Standard" Price Discovery
-     * Calculates SYNL fee based on $0.10 USD.
-     * Fallback to 1 SYNL if oracle is unavailable or unpriced.
-     */
     function calculateSynlFee() public view returns (uint256) {
         try IPriceOracle(oracleAddress).getSynlPriceInUsd() returns (uint256 synlPriceUsd) {
             if (synlPriceUsd == 0) return BOOTSTRAP_FEE_SYNL;
-            // Fee = ($0.10 * 10^18) / Price_of_SYNL_in_USD
             return (CERTIFICATION_FEE_USD * 1e18) / synlPriceUsd;
         } catch {
-            return BOOTSTRAP_FEE_SYNL; // Emergency hard-fallback
+            return BOOTSTRAP_FEE_SYNL;
         }
     }
 
@@ -176,41 +170,42 @@ contract Sovereign_Clockwork_Ledger_V42 is AccessControl {
     }
 
     /**
-     * @notice Forensic Immune System
-     * Triggered by Sentinel or Sweep logic to issue strikes for low BPS.
+     * @notice Forensic Immune System.
+     * @dev Implements a 24-hour cooldown to prevent rapid-fire striking of a single Atomic.
      */
     function issueStrike(string memory _atomicId, uint256 _newBps) external onlyRole(GROWTH_CONTROLLER_ROLE) {
         Atomic storage atomic = registry[_atomicId];
-        atomic.bps = _newBps;
-
+        
         if (_newBps < BPS_FLOOR) {
+            require(block.timestamp > atomic.lastStrikeTimestamp + STRIKE_COOLDOWN, "Strike cooldown active");
             atomic.strikes++;
+            atomic.lastStrikeTimestamp = block.timestamp;
+            
             if (atomic.strikes >= 3) {
                 atomic.isObsolete = true;
             }
         } else {
-            // Self-Healing: Reset strikes if quality improves
-            atomic.strikes = 0;
+            atomic.strikes = 0; // Self-Healing
         }
 
+        atomic.bps = _newBps;
         emit StrikeIssued(_atomicId, atomic.strikes, _newBps);
     }
 
-    /**
-     * @notice Emergency Oracle Update
-     * Allows the Founder (90 days) or Council to update price feed source.
-     */
+    // --- GOVERNANCE ---
+
     function updateOracle(address _newOracle) external onlyRole(GROWTH_CONTROLLER_ROLE) {
         oracleAddress = _newOracle;
     }
 
     function registerAtomic(uint256 _id, string calldata _name, string calldata _cid, address _creator) external onlyRole(GROWTH_CONTROLLER_ROLE) {
         registry[_name] = Atomic({
-            cid: _cid,
-            creator: _creator,
-            bps: 10000, // 100% initial quality
-            strikes: 0,
-            isObsolete: false
+    cid: _cid,
+    creator: _creator,
+    bps: 10000, // Ensure this matches your successBps in the JSON recipes
+    strikes: 0,
+    lastStrikeTimestamp: 0, // Explicitly initialize
+    isObsolete: false
         });
         idToName[_id] = _name;
     }
