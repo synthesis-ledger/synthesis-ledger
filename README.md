@@ -55,7 +55,7 @@ Atomics falling below the **7800 BPS Floor** receive a strike. Three strikes res
 | Action | Cost | Distribution |
 | --- | --- | --- |
 | **Sandbox Run** | Free (BYOK) | N/A |
-| **Certified Run** | $0.10 USD | 50% Founder / 10% Creator / 40% Community |
+| **Certified Run** | $0.10 USD | 20% Founder / 10% Creator / 70% Community |
 | **Immune Strike** | Managed | Deducted from Community Audit Pool (CAP) |
 
 ## 🔗 Repository Structure
