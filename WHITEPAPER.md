@@ -16,7 +16,7 @@ Traditional AI systems operate as "black boxes" with undetectable logic drift an
 
 ### 3.1 Immutable Logic Layer (Arweave)
 
-Logic specifications (Atomics) are serialized into JSON blueprints containing BPS matrices and input/output schemas. These are seeded to Arweave Permaweb, creating a permanent, globally accessible standard for the specific AI function.
+Logic specifications (Atomics) are serialized into JSON blueprints containing BPS matrices and input/output schemas. These are seeded to Arweave Permaweb, creating a permanent, globally accessible standard for a specific AI function.
 
 ### 3.2 Verification Layer (Base Mainnet)
 
@@ -37,9 +37,9 @@ Each audit distributes logic details into four specialized analytical silos:
 
 ### 4.2 Forensic Finality
 
-A 10-person jury aggregates silo reports to produce a final **Breakdown Point Score (BPS)** — Basis Points of Sovereignty (10,000 BPS = 100% Integrity).
+A 10-person jury aggregates silo reports to produce a final **Breakdown Point Score (BPS)** — Basis Points of Sovereignty (10,000 BPS = 100% integrity).
 
-* **BPS Formula**: [Currently not publicly detailed in docs; derived from adversarial consensus across silos]
+* **BPS Formula**: [Currently not publicly detailed in docs; derived from adversarial consensus across silos.]
 * **Strike System**: Logic falling below the **7800 BPS Floor** receives a strike; 3 strikes result in permanent logic obsolescence.
 
 ## 5. Economic Model (Current - Aligned with Live Tokenomics)
