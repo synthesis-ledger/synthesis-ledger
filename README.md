@@ -1,14 +1,16 @@
 # Synthesis Ledger SDK (V42)
 
-Decentralized infrastructure for the deterministic verification and permanent auditing of AI agent logic. Logic is anchored on **Arweave** and verified on **Base Mainnet**.
+Decentralized infrastructure for deterministic verification and permanent auditing of AI agent logic, anchored on **Arweave** and verified on **Base Mainnet**.
 
-**Updated January 11, 2026** — Economic Model synced to live tokenomics at [synthesisledger.xyz/docs/03_tokenomics](https://www.synthesisledger.xyz/docs/03_tokenomics) (current production version).
+**Updated January 11, 2026** — Economic Model aligned with the live tokenomics at [synthesisledger.xyz/docs/03_tokenomics](https://www.synthesisledger.xyz/docs/03_tokenomics). (current production version).
 
 ---
 
 ## 🚀 5-Minute Quickstart
 
 ### 1. Install
+
+# Install the Synthesis Ledger SDK globally
 
 ```bash
 npm i -g synthesis-ledger-sovereign-sdk
@@ -17,6 +19,8 @@ npm i -g synthesis-ledger-sovereign-sdk
 
 ### 2. Configure Environment
 
+# BYOK = Bring Your Own Key
+# Replace the values with your credentials
 Create a `.env` file in your project root with your credentials:
 
 ```env
@@ -31,10 +35,10 @@ NEXT_PUBLIC_BASE_RPC_URL="https://mainnet.base.org"
 Execute a verified audit of a digital ledger using the CFO Atomic:
 
 ```bash
-# Sandbox Mode (Local execution, no on-chain fee)
+# Sandbox Mode: Local execution, no on-chain fee
 synl run A-CFO-LedgerParser ./input.json --sandbox
 
-# Certified Mode (Anchored to Base Mainnet, $0.10 fee)
+# Certified Mode: anchored to Base Mainnet, $0.10 fee
 synl run A-CFO-LedgerParser ./input.json
 
 ```
@@ -47,28 +51,25 @@ synl run A-CFO-LedgerParser ./input.json
 
 The SDK employs a **10-trial forensic simulation** to ensure logic integrity across four specialist silos:
 
-* **Silo A (Toil):** Monitors operational waste and SRE metrics.
-* **Silo B (Security):** Identifies structural vulnerabilities and leakages.
-* **Silo C (Economy):** Prevents fee-split arbitrage and game-theory failures.
-* **Silo D (Structure):** Verifies schema compliance and data integrity.
+* **Silo A (Toil):** Audits operational waste and SRE metrics
+* **Silo B (Security):** Detects structural vulnerabilities and leakages
+* **Silo C (Economy):** Prevents fee-split arbitrage and game-theory exploits
+* **Silo D (Structure):** Verifies schema compliance and data integrity
 
 ### The Strike System
 
-Atomics falling below the **7800 BPS (Basis Points) Floor** (78.00% success density) during an audit cycle receive a strike. Three strikes result in **Terminal Obsolescence** (permanent deactivation and revenue siphoning).
+Atomics below the **7800 BPS (78% success density) Floor** during an audit cycle receive a strike. Three strikes lead to **Terminal Obsolescence** (permanent deactivation and revenue siphoning)
 
 ---
 
 ## 💰 Economic Model
 
-| Action | Cost | Distribution (per **$0.10** Certified Run) |
-| --- | --- | --- |
-| **Sandbox Run** | Free (BYOK) | N/A |
-| **Certified Run** | **$0.10 USD** (min 10 $SYNL anti-spam) | **30%** Protocol Treasury |
-|  |  | **20%** Token Buyback |
-|  |  | **20%** Auditor Rewards |
-|  |  | **10%** Genesis 90 Council |
-|  |  | **20%** Development Fund |
-| **Immune Strike** | Managed | Handled via protocol-level revenue redistribution |
+| Action           | Cost                        | Distribution (per $0.10 Certified Run)                              |
+|-----------------|----------------------------|---------------------------------------------------------------------|
+| **Sandbox Run**   | Free (BYOK)                | N/A                                                                 |
+| **Certified Run** | $0.10 USD (min 10 $SYNL anti-spam) | 30% Protocol Treasury<br>20% Token Buyback<br>20% Auditor Rewards<br>10% Genesis 90 Council<br>20% Development Fund |
+| **Immune Strike** | Managed via protocol       | Revenue redistribution                                              |
+
 
 ---
 
