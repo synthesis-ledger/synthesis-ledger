@@ -1,4 +1,4 @@
-# Breakdown Point Score (BPS) – Plain English Version
+# Basis Point Score (BPS) – Plain English Version
 
 BPS is just a score that tells you how solid an AI logic unit (called an Atomic) is after it’s been checked.  
 Think of it like a health check. The score uses basis points, so 10,000 BPS basically means everything looks perfect.
